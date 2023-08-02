@@ -19,16 +19,21 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public Member createMember(Member member) {
-        verifyExistsEmail(member.getEmail());
+        verifyNotExistsEmail(member.getEmail());
         member.setPassword(passwordEncoder.encode((member.getPassword())));
 
         return memberRepository.save(member);
     }
 
-    private void verifyExistsEmail(String email) {
+    private void verifyNotExistsEmail(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.EMAIL_EXISTS);
         }
+    }
+
+    private void findVerifiedMemberByEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        optionalMember.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 }
