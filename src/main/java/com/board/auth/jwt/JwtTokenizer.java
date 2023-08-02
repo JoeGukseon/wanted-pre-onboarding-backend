@@ -3,6 +3,7 @@ package com.board.auth.jwt;
 import com.board.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
@@ -10,6 +11,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -42,7 +44,7 @@ public class JwtTokenizer {
         claims.put("roles", member.getRoles());
 
         String subject = member.getEmail();
-        Date expiration = getTokenExpiration(accessTokenExpirationMinutes);
+        Date expiration = getTokenExpiration(getAccessTokenExpirationMinutes());
         String base64EncodedSecretKey = encodeBase64SecretKey(getSecretKey());
 
         return generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
@@ -87,5 +89,14 @@ public class JwtTokenizer {
 
     public String encodeBase64SecretKey(String secretKey) {
         return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public Long extractMemberIdFromAccessToken(String accessToken) {
+        try {
+            Jws<Claims> claims = getClaims(accessToken, encodeBase64SecretKey(getSecretKey()));
+            return claims.getBody().get("memberId", Long.class);
+        } catch (JwtException e) {
+            throw new AuthenticationServiceException("Invalid or expired access token");
+        }
     }
 }
