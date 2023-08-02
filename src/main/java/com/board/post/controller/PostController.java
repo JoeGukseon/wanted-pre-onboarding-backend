@@ -2,6 +2,7 @@ package com.board.post.controller;
 
 import com.board.auth.jwt.JwtTokenizer;
 import com.board.dto.MultiResponseDto;
+import com.board.dto.SingleResponseDto;
 import com.board.post.dto.PostDto;
 import com.board.post.entity.Post;
 import com.board.post.mapper.PostMapper;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<MultiResponseDto<PostDto.Response>> getCompanions(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+    public ResponseEntity<MultiResponseDto<PostDto.Response>> getPosts(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
                                                                             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
                                                                             @RequestParam(value = "sortDir", required = false, defaultValue = "DESC") String sortDir,
                                                                             @RequestParam(value = "sortBy", required = false, defaultValue = "postId") String sortBy) {
@@ -48,5 +50,12 @@ public class PostController {
         return ResponseEntity.ok(new MultiResponseDto<>(postMapper.postsToPostResponses(posts), postPage));
     }
 
+    @GetMapping("/{post-id}")
+    public ResponseEntity<SingleResponseDto<PostDto.Response>> getPost(@PathVariable("post-id") @Positive Long postId,
+                                  @RequestHeader("Authorization") String accessToken) {
+        Long memberId = jwtTokenizer.extractMemberIdFromAccessToken(accessToken.replace("Bearer ", ""));
+        Post post = postService.findPost(postId,memberId);
 
+        return ResponseEntity.ok(new SingleResponseDto<>(postMapper.postToPostResponse(post)));
+    }
 }
