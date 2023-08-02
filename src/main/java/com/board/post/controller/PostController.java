@@ -51,11 +51,11 @@ public class PostController {
     }
 
     @GetMapping("/{post-id}")
-    public ResponseEntity<SingleResponseDto<PostDto.Response>> getPost(@PathVariable("post-id") @Positive Long postId,
-                                  @RequestHeader("Authorization") String accessToken) {
-        Long memberId = jwtTokenizer.extractMemberIdFromAccessToken(accessToken.replace("Bearer ", ""));
-        Post post = postService.findPost(postId,memberId);
+    public ResponseEntity<SingleResponseDto<PostDto.Response>> getPost(@PathVariable("post-id") @Positive Long postId) {
+        Post post = postService.findPost(postId);
 
         return ResponseEntity.ok(new SingleResponseDto<>(postMapper.postToPostResponse(post)));
     }
+
+
 }
