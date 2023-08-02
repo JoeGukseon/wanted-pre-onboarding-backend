@@ -10,8 +10,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PostMapper {
-    @Mapping(target = "member", source = "requestBody.memberId")
-    Post postPostToPost(PostDto.Post requestBody);
+    @Mapping(target = "member", source = "memberId")
+    Post postPostToPost(PostDto.Post requestBody,Long memberId);
 
     @Mapping(target = "memberId", source = "post.member.memberId")
     PostDto.Response postToPostResponse(Post post);
