@@ -34,20 +34,14 @@ public class PostService {
         return postRepository.findAll(request);
     }
 
-    public Post findPost(Long postId, Long memberId) {
-        return findVerifiedCompanionById(postId, memberId);
+    public Post findPost(Long postId) {
+        return findVerifiedCompanionById(postId);
     }
-    private Post findVerifiedCompanionById(Long postId,Long memberId) {
+    private Post findVerifiedCompanionById(Long postId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
 
-        Post post = optionalPost.orElseThrow(() ->
+        return optionalPost.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
-
-        if (!post.getMember().getMemberId().equals(memberId)) {
-            throw new BusinessLogicException(ExceptionCode.INVALID_MEMBER);
-        }
-
-        return post;
     }
 
 }
