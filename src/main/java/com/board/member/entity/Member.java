@@ -26,4 +26,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)    //
     private List<Post> posts = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(joinColumns = @JoinColumn(name = "MEMBER_ID"))
+    private List<String> roles = new ArrayList<>();
 }
