@@ -57,5 +57,15 @@ public class PostController {
         return ResponseEntity.ok(new SingleResponseDto<>(postMapper.postToPostResponse(post)));
     }
 
+    @PatchMapping("/{post-id}")
+    public ResponseEntity<SingleResponseDto<PostDto.Response>> patchPost(@PathVariable("post-id") @Positive Long postId,
+                                         @Valid @RequestBody PostDto.Patch requestBody,
+                                    @RequestHeader("Authorization") String accessToken) {
+        Long memberId = jwtTokenizer.extractMemberIdFromAccessToken(accessToken.replace("Bearer ", ""));
+        requestBody.setPostId(postId);
+        Post post = postService.updatePost(postMapper.postPatchToPost(requestBody),memberId);
+
+        return ResponseEntity.ok(new SingleResponseDto<>(postMapper.postToPostResponse(post)));
+    }
 
 }
