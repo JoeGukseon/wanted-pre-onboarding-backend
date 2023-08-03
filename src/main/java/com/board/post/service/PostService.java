@@ -35,13 +35,35 @@ public class PostService {
     }
 
     public Post findPost(Long postId) {
-        return findVerifiedCompanionById(postId);
+        return findVerifiedPostById(postId);
     }
-    private Post findVerifiedCompanionById(Long postId) {
+    private Post findVerifiedPostById(Long postId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         return optionalPost.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
     }
 
+    public Post updatePost(Post post, Long memberId) {
+        Post findPost = findPost(post.getPostId());
+
+        if (!findPost.getMember().getMemberId().equals(memberId)) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_MEMBER);
+        }
+
+        Optional.ofNullable(post.getTitle()).ifPresent(findPost::setTitle);
+        Optional.ofNullable(post.getContent()).ifPresent(findPost::setContent);
+
+        return findPost;
+    }
+
+    public void deletePost(Long postId, Long memberId) {
+        Post findPost = findVerifiedPostById(postId);
+
+        if (!findPost.getMember().getMemberId().equals(memberId)) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_MEMBER);
+        }
+
+        postRepository.deleteById(postId);
+    }
 }
