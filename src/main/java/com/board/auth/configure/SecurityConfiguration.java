@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -53,10 +54,11 @@ public class SecurityConfiguration {
                 .apply(new CustomFilterConfigurer())
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
-                                .antMatchers("/posts").hasRole("USER")
-//                                .antMatchers("/posts/*").hasRole("USER")
+                                .antMatchers(HttpMethod.POST,"/posts").hasRole("USER")
+                                .antMatchers(HttpMethod.POST,"/posts/").hasRole("USER")
+                                .antMatchers(HttpMethod.PATCH,"/posts/*").hasRole("USER")
+                                .antMatchers(HttpMethod.DELETE,"/posts/*").hasRole("USER")
                                 .anyRequest().permitAll()
-//                .anyRequest().authenticated()
                 );
 
         return http.build();
