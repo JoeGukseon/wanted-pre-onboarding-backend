@@ -18,8 +18,17 @@ public class PostDto {
     @Getter
     @Setter
     public static class Response {
+        private Long postId;
         private String title;
         private String content;
         private Long memberId;
+    }
+
+    @Getter
+    @Setter
+    public static class Patch {
+        private Long postId;
+        private String title;
+        private String content;
     }
 }
