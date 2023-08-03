@@ -68,4 +68,12 @@ public class PostController {
         return ResponseEntity.ok(new SingleResponseDto<>(postMapper.postToPostResponse(post)));
     }
 
+    @DeleteMapping("/{post-id}")
+    public ResponseEntity<Void> deleteCompanion(@PathVariable("post-id") @Positive Long postId,
+                                                @RequestHeader("Authorization") String accessToken) {
+        Long memberId = jwtTokenizer.extractMemberIdFromAccessToken(accessToken.replace("Bearer ", ""));
+        postService.deletePost(postId,memberId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
