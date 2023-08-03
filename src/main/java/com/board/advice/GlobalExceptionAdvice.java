@@ -5,6 +5,7 @@ import com.board.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,13 @@ import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ErrorResponse handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e) {
+
+        return ErrorResponse.of(HttpStatus.METHOD_NOT_ALLOWED,e.getMessage());
+    }
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleAuthenticationServiceException(AuthenticationServiceException e) {
