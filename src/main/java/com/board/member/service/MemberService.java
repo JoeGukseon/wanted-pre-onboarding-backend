@@ -1,5 +1,6 @@
 package com.board.member.service;
 
+import com.board.auth.utils.CustomAuthorityUtils;
 import com.board.exception.BusinessLogicException;
 import com.board.exception.ExceptionCode;
 import com.board.member.entity.Member;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,11 +19,13 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CustomAuthorityUtils authorityUtils;
 
     public Member createMember(Member member) {
         verifyNotExistsEmail(member.getEmail());
         member.setPassword(passwordEncoder.encode((member.getPassword())));
-
+        List<String> roles = authorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
         return memberRepository.save(member);
     }
 
