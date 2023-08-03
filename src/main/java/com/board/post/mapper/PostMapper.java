@@ -17,6 +17,8 @@ public interface PostMapper {
     PostDto.Response postToPostResponse(Post post);
     List<PostDto.Response> postsToPostResponses(List<Post> posts);
 
+    Post postPatchToPost(PostDto.Patch requestBody);
+
     default Member mapMemberIdToMember(Long memberId) {
         Member member = new Member();
         member.setMemberId(memberId);
